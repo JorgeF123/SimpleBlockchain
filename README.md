@@ -4,7 +4,7 @@ A learning project implementing blockchain fundamentals in Java. This project st
 
 ## Learning Journey
 
-This project began as a tutorial-based implementation to learn blockchain fundamentals. I've fixed bugs (nonce calculation) and extended it with a Spring Boot web application framework to provide REST API endpoints for blockchain interactions.
+This project began as a tutorial-based implementation to learn blockchain fundamentals. I've fixed bugs and extended it with a Spring Boot web application framework to provide REST API endpoints for blockchain interactions.
 
 ## Current Features
 
@@ -14,15 +14,19 @@ This project began as a tutorial-based implementation to learn blockchain fundam
 - **Chain Validation**: Validates the integrity of the blockchain by checking hash consistency and mining status
 - **JSON Serialization**: Converts blockchain to JSON format using Gson
 - **Spring Boot Web Application**: RESTful API framework for blockchain interactions
-- **REST API Endpoints**: REST controller for wallet and pet management (in development)
+- **REST API Endpoints**: REST controller for wallet and pet management
+- **Wallet System**: Generate unique wallet addresses for players
+- **Pet Data Model**: Pet class with unique ID, type, color, rarity, and ownership
 
 ## Planned Features
 
+- **PetService**: Game logic for creating pets, managing ownership, and trading
+- **BlockPets Game**: Full implementation of blockchain-based collectible pet game
 - Transaction system (replace simple string data)
 - File persistence (save/load blockchain)
 - CLI interface for interactive use
 - Unit tests with JUnit
-- Complete Wallet and Pet management system implementation
+- Frontend web interface
 
 ## Project Structure
 
@@ -32,8 +36,10 @@ src/main/java/com/example/blockchain/
 ├── BlockchainApplication.java  # Spring Boot main application class
 ├── ChainHub.java              # Blockchain management and validation
 ├── Main.java                  # Simple demonstration of block creation
+├── Pet.java                   # Pet data model (id, name, type, color, rarity, owner)
 ├── PetController.java         # REST API controller for wallet/pet operations
-└── StringUtil.java            # SHA-256 hash utility
+├── StringUtil.java            # SHA-256 hash utility
+└── Wallet.java                # Wallet class for generating unique addresses
 ```
 
 ## Requirements
@@ -90,12 +96,29 @@ mvn exec:java -Dexec.mainClass="com.example.blockchain.ChainHub"
 
 The Spring Boot application provides REST API endpoints:
 
-- `POST /api/wallet/create` - Create a new wallet (returns wallet address)
+### Wallet Management
+- `POST /api/wallet/create` - Create a new wallet
+  - Returns: `{"address": "unique_wallet_address"}`
+
+### Pet Management
 - `POST /api/pet/create` - Create a new pet for an owner
   - Request body: `{"ownerAddress": "string", "petName": "string"}`
+  - Returns: Pet object with id, name, type, color, rarity, owner, timestamp
 - `GET /api/pets/owner/{address}` - Get all pets owned by a specific address
+  - Returns: Array of Pet objects
+- `GET /api/pets/all` - Get all pets in the system
+  - Returns: Array of all Pet objects
+- `POST /api/pet/trade` - Trade a pet between owners
+  - Request body: `{"petId": "string", "fromOwner": "string", "toOwner": "string"}`
+  - Returns: `{"status": "success/error", "message": "string"}`
 
-*Note: Some API endpoints may reference classes that are still in development.*
+### Blockchain Operations
+- `GET /api/blockchain` - Get the complete blockchain
+  - Returns: Array of Block objects
+- `GET /api/blockchain/validate` - Validate the blockchain integrity
+  - Returns: `{"valid": true/false}`
+
+*Note: PetService class is required for full functionality of pet-related endpoints.*
 
 ## How It Works
 
@@ -149,9 +172,18 @@ When running `ChainHub.java`, you'll see the blockchain serialized as JSON:
 - **Maven**: Build tool and dependency management
 - **Gson 2.10.1**: JSON serialization/deserialization library
 
+## Project Concept: BlockPets Game
+
+This project is evolving into a blockchain-based collectible pet game where:
+- Each pet is stored as a block on the blockchain
+- Pets have unique traits (type, color, rarity) determined by their block hash
+- Players have wallets with unique addresses
+- Pets can be traded between players (recorded on blockchain)
+- All pet ownership and trades are permanently stored on the blockchain
+
 ## Learning Resources
 
-This implementation is based on blockchain tutorial concepts. The goal is to understand the fundamentals and extend the project with original features, including web API integration and real-world use cases.
+This implementation is based on blockchain tutorial concepts. The goal is to understand the fundamentals and extend the project with original features, including web API integration and real-world use cases like digital collectibles.
 
 ## License
 
