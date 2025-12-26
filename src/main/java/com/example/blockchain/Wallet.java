@@ -20,19 +20,13 @@ public class Wallet {
     }
 
     // Returns the wallet address
-    public String getAddress() {
-        return address;
-    }
+    public String getAddress() { return address; }
 
     // Returns the list of pets
-    public List<Pet> getPets() {
-        return pets;
-    }
+    public List<Pet> getPets() { return pets; }
 
     // Adds a pet to the wallet’s list
-    public void addPet(Pet pet) {
-        pets.add(pet);
-    }
+    public void addPet(Pet pet) { pets.add(pet); }
 
     // Removes a pet from the wallet’s list
     public void removePet(Pet pet) {
