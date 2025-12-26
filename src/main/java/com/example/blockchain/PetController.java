@@ -51,4 +51,33 @@ public class PetController {
         return ResponseEntity.ok(ChainHub.blockChain);
     }
 
+    // Returns whether the blockchain is valid as a JSON object with "valid": true/false
+    @GetMapping("/blockchain/validate")
+    public ResponseEntity<Map<String, Boolean>> validateBlockchain() {
+        boolean isValid = ChainHub.isChainValid();
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("valid", isValid);
+        return ResponseEntity.ok(response);
+    }
+
+    // Trades a pet from one owner to another and returns success or error status
+    @PostMapping("/pet/trade")
+    public ResponseEntity<Map<String, String>> tradePet(@RequestBody Map<String, String> request) {
+        String petId = request.get("petId");
+        String fromOwner = request.get("fromOwner");
+        String toOwner = request.get("toOwner");
+
+        try {
+            PetService.tradePet(petId, fromOwner, toOwner);
+            Map<String, String> response = new HashMap<>();
+            response.put("status", "success");
+            response.put("message", "Pet traded successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("status", "error");
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
 }
