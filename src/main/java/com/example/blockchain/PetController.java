@@ -38,4 +38,17 @@ public class PetController {
         return ResponseEntity.ok(pets);
     }
 
+    // gets all the pets in the system
+    @GetMapping("/pets/all")
+    public ResponseEntity<List<Pet>> getAllPets() {
+        List<Pet> pets = PetService.getAllPets();
+        return ResponseEntity.ok(pets);
+    }
+
+    // get the complete blockchain stored in ChainHub
+    @GetMapping("/blockchain")
+    public ResponseEntity<List<Block>> getBlockchain() {
+        return ResponseEntity.ok(ChainHub.blockChain);
+    }
+
 }
