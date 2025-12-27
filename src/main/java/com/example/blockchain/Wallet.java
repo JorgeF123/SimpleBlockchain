@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+// Wallet class for managing player addresses and pet collections
 public class Wallet {
 
     private String address;

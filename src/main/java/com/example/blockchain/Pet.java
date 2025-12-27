@@ -1,5 +1,9 @@
 package com.example.blockchain;
 
+/*
+ * Represents a collectible pet stored on the blockchain.
+ * Each pet is linked to a unique block hash.
+ */
 public class Pet {
     private String id;
     private String name;
