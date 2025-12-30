@@ -30,7 +30,8 @@ public class Wallet {
     public void addPet(Pet pet) { pets.add(pet); }
 
     // Removes a pet from the wallet’s list
-    public void removePet(Pet pet) {
-        pets.remove(pet);
-    }
+    public void removePet(Pet pet) { pets.remove(pet); }
+    
+    // Returns true if the wallet has any pets
+    public boolean hasPets() { return !pets.isEmpty(); }
 }

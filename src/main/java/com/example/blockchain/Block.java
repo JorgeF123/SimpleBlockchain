@@ -32,4 +32,8 @@ public class Block {
         }
         System.out.println("Block Mined!!! : " + hash);
     }
+
+    public String getData() {
+        return data;
+    }
 }
