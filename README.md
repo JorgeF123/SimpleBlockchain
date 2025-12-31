@@ -14,19 +14,22 @@ This project began as a tutorial-based implementation to learn blockchain fundam
 - **Chain Validation**: Validates the integrity of the blockchain by checking hash consistency and mining status
 - **JSON Serialization**: Converts blockchain to JSON format using Gson
 - **Spring Boot Web Application**: RESTful API framework for blockchain interactions
-- **REST API Endpoints**: REST controller for wallet and pet management
+- **REST API Endpoints**: Comprehensive REST controller for wallet and pet management
 - **Wallet System**: Generate unique wallet addresses for players
 - **Pet Data Model**: Pet class with unique ID, type, color, rarity, and ownership
+- **PetService**: Complete game logic for creating pets, managing ownership, and trading
+- **Transaction System**: Transaction model and history tracking for all pet operations
+- **File Persistence**: Automatic save/load of blockchain and pet registry to JSON files
+- **Transaction History API**: Query transaction history for pets and owners
+- **System Statistics**: API endpoint for blockchain and pet statistics
+- **Unit Tests**: JUnit tests for core blockchain functionality
 
 ## Planned Features
 
-- **PetService**: Game logic for creating pets, managing ownership, and trading
-- **BlockPets Game**: Full implementation of blockchain-based collectible pet game
-- Transaction system (replace simple string data)
-- File persistence (save/load blockchain)
+- **BlockPets Game**: Enhanced features for blockchain-based collectible pet game
 - CLI interface for interactive use
-- Unit tests with JUnit
 - Frontend web interface
+- Enhanced transaction system with signatures
 
 ## Project Structure
 
@@ -34,12 +37,19 @@ This project began as a tutorial-based implementation to learn blockchain fundam
 src/main/java/com/example/blockchain/
 ├── Block.java                  # Block class with hash calculation and mining
 ├── BlockchainApplication.java  # Spring Boot main application class
-├── ChainHub.java              # Blockchain management and validation
+├── ChainHub.java              # Blockchain management and validation with persistence
 ├── Main.java                  # Simple demonstration of block creation
 ├── Pet.java                   # Pet data model (id, name, type, color, rarity, owner)
 ├── PetController.java         # REST API controller for wallet/pet operations
+├── PetService.java            # Pet management logic, trading, and transaction parsing
+├── PersistenceService.java    # Spring component for loading/saving data on startup/shutdown
 ├── StringUtil.java            # SHA-256 hash utility
+├── Transaction.java           # Transaction model for blockchain operations
 └── Wallet.java                # Wallet class for generating unique addresses
+
+src/test/java/com/example/blockchain/
+├── BlockTest.java             # Unit tests for Block class
+└── ChainHubTest.java          # Unit tests for blockchain validation
 ```
 
 ## Requirements
@@ -48,6 +58,7 @@ src/main/java/com/example/blockchain/
 - Maven 3.x
 - Spring Boot 3.2.0
 - Gson 2.10.1 (managed by Maven)
+- JUnit 5 (included in spring-boot-starter-test)
 
 ## Building the Project
 
@@ -78,6 +89,22 @@ java -jar target/blockChain-1.0-SNAPSHOT.jar
 
 The application will start on `http://localhost:8080` by default.
 
+**Note**: On startup, the application automatically loads persisted data from JSON files (if they exist). On shutdown, all data is automatically saved to disk.
+
+### Running Tests
+
+Run all unit tests:
+
+```bash
+mvn test
+```
+
+Run tests with verbose output:
+
+```bash
+mvn test -X
+```
+
 ### Option 2: Run Main.java
 Demonstrates basic block creation without mining:
 
@@ -104,6 +131,8 @@ The Spring Boot application provides REST API endpoints:
 - `POST /api/pet/create` - Create a new pet for an owner
   - Request body: `{"ownerAddress": "string", "petName": "string"}`
   - Returns: Pet object with id, name, type, color, rarity, owner, timestamp
+- `GET /api/pet/{petId}` - Get a single pet by its ID
+  - Returns: Pet object (404 if not found)
 - `GET /api/pets/owner/{address}` - Get all pets owned by a specific address
   - Returns: Array of Pet objects
 - `GET /api/pets/all` - Get all pets in the system
@@ -112,13 +141,21 @@ The Spring Boot application provides REST API endpoints:
   - Request body: `{"petId": "string", "fromOwner": "string", "toOwner": "string"}`
   - Returns: `{"status": "success/error", "message": "string"}`
 
+### Transaction History
+- `GET /api/pet/{petId}/history` - Get complete transaction history for a specific pet
+  - Returns: Array of Transaction objects (CREATE_PET and TRADE_PET operations)
+- `GET /api/owner/{address}/transactions` - Get all transactions involving a specific owner
+  - Returns: Array of Transaction objects where the owner is involved
+
 ### Blockchain Operations
 - `GET /api/blockchain` - Get the complete blockchain
   - Returns: Array of Block objects
 - `GET /api/blockchain/validate` - Validate the blockchain integrity
   - Returns: `{"valid": true/false}`
 
-*Note: PetService class is required for full functionality of pet-related endpoints.*
+### Statistics
+- `GET /api/stats` - Get system statistics
+  - Returns: Object with totalPets, totalOwners, totalTransactions, blockchainSize, difficulty, blockchainValid
 
 ## How It Works
 
@@ -146,6 +183,16 @@ The Spring Boot application provides REST API endpoints:
    - Each block's `previousHash` matches the previous block's hash
    - Each block has been properly mined (hash meets difficulty requirement)
 
+5. **Transaction System**: Transactions are stored in blocks as JSON strings:
+   - `CREATE_PET`: Records pet creation with owner address and pet name
+   - `TRADE_PET`: Records ownership transfer between addresses
+   - Transaction history can be queried via API endpoints
+
+6. **Data Persistence**: 
+   - Blockchain and pet registry are automatically saved to JSON files
+   - Data persists across application restarts
+   - Files are created automatically on first save
+
 ## Example Output
 
 When running `ChainHub.java`, you'll see the blockchain serialized as JSON:
@@ -165,12 +212,29 @@ When running `ChainHub.java`, you'll see the blockchain serialized as JSON:
 ]
 ```
 
+## File Persistence
+
+The application automatically persists data to the following JSON files in the project root:
+
+- `blockchain.json` - Complete blockchain data
+- `pets.json` - Pet registry with all pet data
+- `pet_blockhash.json` - Mapping of pet IDs to block hashes
+
+**Data persistence behavior:**
+- Data is automatically loaded on application startup
+- Blockchain is saved after each pet creation or trade operation
+- All data is saved on application shutdown
+- If files don't exist, the application starts with empty data
+
+**Note**: These files are gitignored and won't be committed to version control.
+
 ## Technology Stack
 
 - **Java 24**: Programming language
 - **Spring Boot 3.2.0**: Application framework for building REST APIs
 - **Maven**: Build tool and dependency management
 - **Gson 2.10.1**: JSON serialization/deserialization library
+- **JUnit 5**: Unit testing framework (via spring-boot-starter-test)
 
 ## Project Concept: BlockPets Game
 

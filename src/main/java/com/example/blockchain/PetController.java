@@ -45,6 +45,16 @@ public class PetController {
         return ResponseEntity.ok(pets);
     }
 
+    // Gets a single pet by its ID
+    @GetMapping("/pet/{petId}")
+    public ResponseEntity<Pet> getPetById(@PathVariable String petId) {
+        Pet pet = PetService.getPetById(petId);
+        if (pet == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(pet);
+    }
+
     // get the complete blockchain stored in ChainHub
     @GetMapping("/blockchain")
     public ResponseEntity<List<Block>> getBlockchain() {
@@ -79,5 +89,25 @@ public class PetController {
             response.put("message", e.getMessage());
             return ResponseEntity.badRequest().body(response);
         }
+    }
+
+    // Gets the complete transaction history for a specific pet
+    @GetMapping("/pet/{petId}/history")
+    public ResponseEntity<List<Transaction>> getPetTransactionHistory(@PathVariable String petId) {
+        List<Transaction> transactions = PetService.getPetTransactionHistory(petId);
+        return ResponseEntity.ok(transactions);
+    }
+
+    // Gets all transactions involving a specific owner address
+    @GetMapping("/owner/{address}/transactions")
+    public ResponseEntity<List<Transaction>> getOwnerTransactionHistory(@PathVariable String address) {
+        List<Transaction> transactions = PetService.getOwnerTransactionHistory(address);
+        return ResponseEntity.ok(transactions);
+    }
+
+    // Gets system statistics
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Object>> getStats() {
+        return ResponseEntity.ok(PetService.getStats());
     }
 }
