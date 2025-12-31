@@ -37,3 +37,8 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Blockchain Data Files ###
+blockchain.json
+pets.json
+pet_blockhash.json

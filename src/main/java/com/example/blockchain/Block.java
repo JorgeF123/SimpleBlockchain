@@ -36,4 +36,38 @@ public class Block {
     public String getData() {
         return data;
     }
+
+    // Getters for persistence
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public int getNonce() {
+        return nonce;
+    }
+
+    // Setters for deserialization (used by Gson)
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
+    public void setPreviousHash(String previousHash) {
+        this.previousHash = previousHash;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    public void setNonce(int nonce) {
+        this.nonce = nonce;
+    }
+
+    // No-arg constructor for Gson deserialization
+    public Block() {
+    }
 }

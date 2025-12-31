@@ -1,8 +1,14 @@
 package com.example.blockchain;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 
 public class PetService {
 
@@ -13,6 +19,56 @@ public class PetService {
     private static final Map<String, String> petIdToBlockHash = new HashMap<>();
 
     private static final Gson gson = new Gson();
+    private static final String PETS_FILE = "pets.json";
+    private static final String PET_BLOCKHASH_FILE = "pet_blockhash.json";
+    private static final Gson fileGson = new GsonBuilder().setPrettyPrinting().create();
+
+    // Load pet registry from file
+    public static void loadPetRegistry() {
+        try {
+            File petsFile = new File(PETS_FILE);
+            if (petsFile.exists()) {
+                String content = new String(Files.readAllBytes(Paths.get(PETS_FILE)));
+                if (!content.trim().isEmpty()) {
+                    Type mapType = new TypeToken<Map<String, Pet>>(){}.getType();
+                    Map<String, Pet> loaded = fileGson.fromJson(content, mapType);
+                    if (loaded != null) {
+                        petRegistry.putAll(loaded);
+                        System.out.println("Pet registry loaded successfully. Pets: " + petRegistry.size());
+                    }
+                }
+            }
+
+            File blockHashFile = new File(PET_BLOCKHASH_FILE);
+            if (blockHashFile.exists()) {
+                String content = new String(Files.readAllBytes(Paths.get(PET_BLOCKHASH_FILE)));
+                if (!content.trim().isEmpty()) {
+                    Type mapType = new TypeToken<Map<String, String>>(){}.getType();
+                    Map<String, String> loaded = fileGson.fromJson(content, mapType);
+                    if (loaded != null) {
+                        petIdToBlockHash.putAll(loaded);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error loading pet registry: " + e.getMessage());
+        }
+    }
+
+    // Save pet registry to file
+    public static void savePetRegistry() {
+        try {
+            String petsJson = fileGson.toJson(petRegistry);
+            Files.write(Paths.get(PETS_FILE), petsJson.getBytes());
+            
+            String blockHashJson = fileGson.toJson(petIdToBlockHash);
+            Files.write(Paths.get(PET_BLOCKHASH_FILE), blockHashJson.getBytes());
+            
+            System.out.println("Pet registry saved successfully. Pets: " + petRegistry.size());
+        } catch (Exception e) {
+            System.err.println("Error saving pet registry: " + e.getMessage());
+        }
+    }
 
     // Pet types based on hash values
     private static final String[] PET_TYPES = {
@@ -52,6 +108,7 @@ public class PetService {
         Block newBlock = new Block(transactionData, previousHash);
         newBlock.mineBlock(ChainHub.difficulty);
         ChainHub.blockChain.add(newBlock);
+        ChainHub.saveBlockchain(); // Save blockchain after adding block
 
         // Derive pet attributes from the block hash
         String blockHash = newBlock.hash;
@@ -73,6 +130,9 @@ public class PetService {
         // Store in registry
         petRegistry.put(petId, pet);
         petIdToBlockHash.put(petId, blockHash);
+
+        // Save to disk
+        savePetRegistry();
 
         return pet;
     }
@@ -126,6 +186,7 @@ public class PetService {
         Block newBlock = new Block(transactionData, previousHash);
         newBlock.mineBlock(ChainHub.difficulty);
         ChainHub.blockChain.add(newBlock);
+        ChainHub.saveBlockchain(); // Save blockchain after adding block
 
         // Update pet ownership
         // Create new pet with updated owner (Pet is immutable, so we need to replace it)
@@ -140,6 +201,9 @@ public class PetService {
         );
 
         petRegistry.put(petId, updatedPet);
+
+        // Save to disk
+        savePetRegistry();
     }
 
     // Derives pet type from block hash
