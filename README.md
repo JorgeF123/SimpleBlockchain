@@ -1,6 +1,11 @@
 # Simple Blockchain Implementation
 
-A learning project implementing blockchain fundamentals in Java. This project started as an educational exercise to understand core blockchain concepts including block creation, cryptographic hashing, proof-of-work mining, and chain validation. The project has evolved into a Spring Boot application with REST API capabilities.
+![Java](https://img.shields.io/badge/Java-24-orange)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen)
+![Maven](https://img.shields.io/badge/Maven-3.x-blue)
+![License](https://img.shields.io/badge/License-Educational-lightgrey)
+
+A learning project implementing blockchain fundamentals in Java. This project started as an educational exercise to understand core blockchain concepts including block creation, cryptographic hashing, proof-of-work mining, and chain validation. The project has evolved into a Spring Boot application with REST API capabilities and a modern web interface.
 
 ## Learning Journey
 
@@ -26,10 +31,10 @@ This project began as a tutorial-based implementation to learn blockchain fundam
 
 ## Planned Features
 
-- **BlockPets Game**: Enhanced features for blockchain-based collectible pet game
+- Enhanced transaction system with digital signatures
+- Multi-node blockchain network support
+- Advanced pet breeding/evolution mechanics
 - CLI interface for interactive use
-- Frontend web interface
-- Enhanced transaction system with signatures
 
 ## Project Structure
 
@@ -90,6 +95,8 @@ java -jar target/blockChain-1.0-SNAPSHOT.jar
 The application will start on `http://localhost:8080` by default.
 
 **Note**: On startup, the application automatically loads persisted data from JSON files (if they exist). On shutdown, all data is automatically saved to disk.
+
+Open `http://localhost:8080/index.html` in your browser to access the web interface.
 
 ### Running Tests
 

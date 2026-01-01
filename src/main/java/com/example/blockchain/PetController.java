@@ -23,12 +23,31 @@ public class PetController {
 
     // Takes an owner address + pet name, creates a new pet for that owner, returns the created pet
     @PostMapping("/pet/create")
-    public ResponseEntity<Pet> createPet(@RequestBody Map<String, String> request) {
+    public ResponseEntity<?> createPet(@RequestBody Map<String, String> request) {
         String ownerAddress = request.get("ownerAddress");
         String petName = request.get("petName");
 
-        Pet pet = PetService.createPet(ownerAddress, petName);
-        return ResponseEntity.ok(pet);
+        // Input validation
+        if (ownerAddress == null || ownerAddress.trim().isEmpty()) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "ownerAddress is required");
+            return ResponseEntity.badRequest().body(error);
+        }
+
+        if (petName == null || petName.trim().isEmpty()) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "petName is required");
+            return ResponseEntity.badRequest().body(error);
+        }
+
+        try {
+            Pet pet = PetService.createPet(ownerAddress, petName);
+            return ResponseEntity.ok(pet);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.badRequest().body(error);
+        }
     }
 
     // Searches the database, finds all pets with that owner address, returns a list of Pet objects
@@ -76,6 +95,28 @@ public class PetController {
         String petId = request.get("petId");
         String fromOwner = request.get("fromOwner");
         String toOwner = request.get("toOwner");
+
+        // Input validation
+        if (petId == null || petId.trim().isEmpty()) {
+            Map<String, String> response = new HashMap<>();
+            response.put("status", "error");
+            response.put("message", "petId is required");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        if (fromOwner == null || fromOwner.trim().isEmpty()) {
+            Map<String, String> response = new HashMap<>();
+            response.put("status", "error");
+            response.put("message", "fromOwner is required");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        if (toOwner == null || toOwner.trim().isEmpty()) {
+            Map<String, String> response = new HashMap<>();
+            response.put("status", "error");
+            response.put("message", "toOwner is required");
+            return ResponseEntity.badRequest().body(response);
+        }
 
         try {
             PetService.tradePet(petId, fromOwner, toOwner);
